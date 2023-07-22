@@ -25,74 +25,9 @@ public class Main {
                 }
             }
         }).start();
-        new Thread(() -> {
-            String examineeA;
-            String largestA = null;
-            int countA = 0;
-            int maxCountA = 0;
-            for (int i = 0; i < texts.length; i++) {
-                try {
-                    examineeA = arrayA.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                for (char x : examineeA.toCharArray()) {
-                    if (x == 'a')
-                        countA++;
-                }
-                if (countA > maxCountA) {
-                    maxCountA = countA;
-                    largestA = examineeA;
-                }
-            }
-            System.out.println("The text containing the largest number of 'a' characters " + largestA);
-        }).start();
-
-        new Thread(() -> {
-            String examineeB;
-            String largestB = null;
-            int countB = 0;
-            int maxCountB = 0;
-            for (int i = 0; i < texts.length; i++) {
-                try {
-                    examineeB = arrayB.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                for (char x : examineeB.toCharArray()) {
-                    if (x == 'b')
-                        countB++;
-                }
-                if (countB > maxCountB) {
-                    maxCountB = countB;
-                    largestB = examineeB;
-                }
-            }
-            System.out.println("The text containing the largest number of 'b' characters " + largestB);
-        }).start();
-        new Thread(() -> {
-            String examineeC;
-            String largestC = null;
-            int countC = 0;
-            int maxCountC = 0;
-            for (int i = 0; i < texts.length; i++) {
-                try {
-                    examineeC = arrayC.take();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                for (char x : examineeC.toCharArray()) {
-                    if (x == 'c')
-                        countC++;
-                }
-                if (countC > maxCountC) {
-                    maxCountC = countC;
-                    largestC = examineeC;
-                }
-            }
-            System.out.println("The text containing the largest number of 'c' characters " + largestC);
-        }).start();
-
+        threadExecutor('a', arrayA, texts);
+        threadExecutor('b', arrayB, texts);
+        threadExecutor('c', arrayC, texts);
     }
 
     public static String generateText(String letters, int length) {
@@ -102,5 +37,30 @@ public class Main {
             text.append(letters.charAt(random.nextInt(letters.length())));
         }
         return text.toString();
+    }
+
+    public static void threadExecutor(char letter, ArrayBlockingQueue<String> array, String[] texts) {
+        new Thread(() -> {
+            String examinee;
+            String largest = null;
+            int count = 0;
+            int maxCount = 0;
+            for (int i = 0; i < texts.length; i++) {
+                try {
+                    examinee = array.take();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                for (char x : examinee.toCharArray()) {
+                    if (x == letter)
+                        count++;
+                }
+                if (count > maxCount) {
+                    maxCount = count;
+                    largest = examinee;
+                }
+            }
+            System.out.println("The text containing the largest number of '" + letter + "' characters " + largest);
+        }).start();
     }
 }
